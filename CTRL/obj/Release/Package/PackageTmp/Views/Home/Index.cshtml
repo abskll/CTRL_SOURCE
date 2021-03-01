@@ -1,0 +1,196 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+<input id="Connect" class="btn btn-warning" type="button" value="Connect" />
+<br />
+<input id="Ipaddress" type="text" value="http://10.0.0.207:80/wsDemo/"/>
+<br />
+
+<input id="AutoAttack" class="btn btn-primary" type="button" value="AutoAttack" />
+<input id="PetAttack" class="btn btn-primary" type="button" value="PetAttack" />
+<input id="Assist" class="btn btn-primary" type="button" value="Assist Group member" />
+<input id="Followbutton" class="btn btn-primary" type="button" value="Follow" />
+<input id="CircleOfBrimstone" class="btn btn-primary" type="button" value="BrimstoneC" />
+<input id="Burnout8" class="btn btn-primary" type="button" value="Burnout8" />
+<input id="IceflameEfflux" class="btn btn-primary" type="button" value="IceflameE" />
+<input id="EmperealGuardian" class="btn btn-primary" type="button" value="EmpG" />
+<input id="AspectOfEarth" class="btn btn-primary" type="button" value="AspEarth" />
+<input id="Gate" class="btn btn-primary" type="button" value="Gate" />
+<br />
+<input id="Sit" class="btn btn-primary" type="button" value="Sit" />
+<input id="RumblingServant" class="btn btn-primary" type="button" value="RumblingServant" />
+<input id="HulkingBodyguard" class="btn btn-primary" type="button" value="HulkingBodyguard" />
+<input id="ShockOfMany" class="btn btn-primary" type="button" value="Shock Many" />
+<input id="ShockDiscSteel" class="btn btn-primary" type="button" value="Shock Steel" />
+<input id="DelugeOfThunderbolts" class="btn btn-primary" type="button" value="DelugeThund" />
+
+
+
+<script>
+
+
+    $(document).ready(function () {
+        var connected = false;
+        let sockets;
+        var tm;
+        strToAB = str =>
+            new Uint8Array(str.split('')
+                .map(c => c.charCodeAt(0))).buffer;
+
+        ABToStr = ab =>
+            new Uint8Array(ab).reduce((p, c) =>
+                p + String.fromCharCode(c), '');
+
+        $('#Connect').click(function () {
+            if (connected) {
+                //byte[] bytes = Encoding.UTF8.GetBytes(JSON.stringify(obj));
+                //var textEncoder = new TextEncoder("utf-8");
+                //var encoded = textEncoder.encode(JSON.stringify(obj));
+                //var encoded = new TextEncoder("utf-8").encode(JSON.stringify(obj));
+                //var bytes = strTObytearray();
+
+
+                //sockets.send(JSON.stringify(obj));
+                //documentBody = context.document.body;
+                //context.load(documentBody);
+                //txt = context.load(body, 'text');
+                //context.sync()
+                //var txt = documentBody.text;
+
+                //var txt = getText();
+                //sockets.send(JSON.stringify(txt));
+                //return;
+
+                //sockets.send(documentBody.text);
+                $('#Connect').removeClass('btn btn-danger').addClass('btn btn-success').val("Connected");
+            } else {
+                //sockets = new WebSocket($('#Ipaddress').val);
+                sockets = new WebSocket("ws://10.0.0.207:24277/ss");
+                //http://+:80/wsDemo/
+            }
+            sockets.onopen = function (e) {
+                $('#Connect').removeClass('btn btn-danger').addClass('btn btn-success').val("Connected");
+                setInterval(ping, 10000);
+                //writetoword("Sending pings to server");
+                connected = true;
+                //$('#Connect').text("Send");
+            };
+            sockets.onclose = function () {
+                //writetoword("socket closed");
+                $('#Connect').removeClass('btn btn-success').addClass('btn btn-danger').val("Connect");
+                //$('Connect').removeClass('green');
+                connected = false;
+                //$('#Connect').val("Connect");
+            };
+            sockets.onmessage = function (event) {
+                //messagesreceived += 1;
+                //if (messagesreceived > 2) {
+                //    writetoword("Sending JSON");
+                //    sockets.send(JSON.stringify(obj));
+                //    return;
+                //}
+                const reader = new FileReader();
+                // This fires after the blob has been read/loaded.
+                reader.addEventListener('loadend', (e) => {
+                    const text = e.srcElement.result;
+                    //writetoword("message received" + text);
+                });
+                // Start reading the blob as text.
+                reader.readAsText(event.data);
+                if (event.data instanceof ArrayBuffer) {
+                    var buffer = event.data;
+                    //writetoword("received arraybuffer:");
+                } else if (event.data instanceof String) {
+                    var jsonObject = JSON.parse(event.data);
+                    //writetoword("Received string:" + jsonObject);
+                }
+                var msg = ABToStr(event.data);
+                //writetoword(ABToStr(event.data));
+                //writetoword(ABToStr(event.data));
+                if (msg == '__pong__') {
+                    //writetoword("Pong Received");
+                    pong();
+                    //return;
+                }
+            };
+        });
+        //$("#CompSelect").change(function () {
+        //    var bundle = {};
+        //    bundle.url = "Home/Rate";
+        //    bundle.type = "POST";
+        //    bundle.data = JSON.stringify({ company: $("#CompSelect").val() });
+        //    bundle.datatype = "json";
+        //    bundle.contentType = "application/json";
+        //    bundle.success = function (rate) {
+        //        $("#rte").val(rate);
+        //    };
+        //    bundle.error = function () {
+        //        alert("Error in getting Rate");
+        //    };
+        //    $.ajax(bundle);
+        //});
+
+        function ping() {
+            sockets.send('__ping__');
+            //writetoword("Just a test");
+            tm = setTimeout(function () {
+                /// ---connection closed ///
+            }, 5000);
+        }
+
+        function pong() {
+            clearTimeout(tm);
+        }
+
+        $("#AutoAttack").click(function () {
+            sockets.send("AutoAttack");
+        });
+        $("#PetAttack").click(function () {
+            sockets.send("PetAttack");
+        });
+        $("#Assist").click(function () {
+            sockets.send("Assist Group member");
+        });
+        $("#Followbutton").click(function () {
+            sockets.send("Follow");
+        });
+        $("#CircleOfBrimstone").click(function () {
+            sockets.send("BrimstoneC");
+        });
+        $("#Burnout8").click(function () {
+            sockets.send("Burnout8");
+        });
+        $("#IceflameEfflux").click(function () {
+            sockets.send("IceflameE");
+        });
+        $("#EmperealGuardian").click(function () {
+            sockets.send("EmpG");
+        });
+        $("#AspectOfEarth").click(function () {
+            sockets.send("AspEarth");
+        });
+        $("#Gate").click(function () {
+            sockets.send("Gate");
+        });
+        $("#Sit").click(function () {
+            sockets.send("Sit");
+        });
+        $("#RumblingServant").click(function () {
+            sockets.send("RumblingServant");
+        });
+        $("#HulkingBodyguard").click(function () {
+            sockets.send("HulkingBodyguard");
+        });
+        $("#ShockOfMany").click(function () {
+            sockets.send("Shock Many");
+        });
+        $("#ShockDiscSteel").click(function () {
+            sockets.send("Shock Steel");
+        });
+        $("#DelugeOfThunderbolts").click(function () {
+            sockets.send("DelugeThund");
+        });
+
+    });
+</script>
+
